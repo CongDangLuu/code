@@ -24,4 +24,5 @@ typedef struct
 void Print_SS_RoundRobin(SS_RoundRobin *queue);
 void Initialize_SS_RoundRobin(SS_RoundRobin **queue);
 uint8_t isTerminalPresent(Terminal trm, SS_RoundRobin *queue);
-uint8_t removeTerminal(Terminal trm, SS_RoundRobin *queue);
+uint8_t removeTerminal(Terminal trm, SS_RoundRobin **queue);
+void Initialize_SS_RoundRobin_1(SS_RoundRobin **queue);

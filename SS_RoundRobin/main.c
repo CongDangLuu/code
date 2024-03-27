@@ -4,7 +4,7 @@ int main()
 {
     SS_RoundRobin *queue = NULL;
 
-    Initialize_SS_RoundRobin(&queue);
+    Initialize_SS_RoundRobin_1(&queue);
 
     Print_SS_RoundRobin(queue);
 
@@ -14,8 +14,8 @@ int main()
     printf("This node is%spresent\n", isTerminalPresent(target1, queue) ? " " : " not ");
     printf("This node is%spresent\n", isTerminalPresent(target2, queue) ? " " : " not ");
 
-    removeTerminal(target1, queue);
-
+    removeTerminal(target1, &queue);
+    printf("\n after removeTerminal");
     Print_SS_RoundRobin(queue);
 
     free(queue);
@@ -61,6 +61,39 @@ void Initialize_SS_RoundRobin(SS_RoundRobin **queue)
         }
     }
 }
+void Initialize_SS_RoundRobin_1(SS_RoundRobin **queue)
+{
+    int NumNode =3;
+    int direction = 2;
+    int address = 22;
+    for (int i = 0; i < NumNode; i++)
+    {
+        SS_RoundRobin *newNode = (SS_RoundRobin *)malloc(sizeof(SS_RoundRobin));
+        if (newNode == NULL)
+        {
+            printf("Memory allocation failed.\n");
+            return;
+        }
+        newNode->myTerm.direction = direction + i;
+        newNode->myTerm.address = address + i*11;
+ 
+        newNode->nextOne = NULL;
+
+        if (*queue == NULL)
+        {
+            *queue = newNode;
+        }
+        else
+        {
+            SS_RoundRobin *current = *queue;
+            while (current->nextOne != NULL)
+            { // find new node
+                current = current->nextOne;
+            }
+            current->nextOne = newNode;
+        }
+    }
+}
 
 void Print_SS_RoundRobin(SS_RoundRobin *queue)
 {
@@ -87,37 +120,31 @@ uint8_t isTerminalPresent(Terminal trm, SS_RoundRobin *queue) {
             current->myTerm.address == trm.address) {
             return TRUE;
         }
-        current = current->nextOne;
+    current = current->nextOne;
     }
     return FALSE;
 }
 
 
-uint8_t removeTerminal(Terminal trm, SS_RoundRobin *queue) {
+uint8_t removeTerminal(Terminal trm, SS_RoundRobin **queue) {
+    SS_RoundRobin *previous = NULL;
+    SS_RoundRobin *current = *queue;
 
-    SS_RoundRobin *current = queue;
-    SS_RoundRobin *prev = NULL;
-    printf("\nEnter removeTerminal\n");
-
-    if (!isTerminalPresent(trm,queue)){
-        printf("This node is not present\n");
-        return FALSE;// not present
-    }   
-
-    while (current != NULL) {
-        if (current->myTerm.direction == trm.direction &&
-            current->myTerm.address == trm.address) {
-            if (prev != NULL) {
-                prev->nextOne = current->nextOne; //skip current node
-            } else {
-                printf("The first node\n");
-                queue = current->nextOne;//The first node   
-            }
-            Print_SS_RoundRobin(queue);
-            return TRUE;
-        }
-        prev = current;
+    while (current != NULL &&
+        !(current->myTerm.direction == trm.direction &&
+            current->myTerm.address == trm.address)) {
+        previous = current;
         current = current->nextOne;
     }
-    return FALSE;
+
+    if (current == NULL) {
+        return FALSE;
+    }
+
+    if (previous != NULL) {
+        previous->nextOne = current->nextOne;
+    } else {
+        *queue = current->nextOne;
+    }
+    return TRUE;
 }
